@@ -165,7 +165,7 @@ export class RoundManager {
     const neverUsedHistory = available.filter(q => !this.persistentHistoryIds.has(q.id));
     const candidateGroup = neverUsedHistory.length > 0 ? neverUsedHistory : available;
 
-    // 4. Smart rotation: prefer questions with different category and artist than last question
+    // 4. Question variety: prefer questions with different category and artist than last question
     if (candidateGroup.length > 1 && (this.lastCategory || this.lastArtist)) {
       const rotated = candidateGroup.filter(q =>
         q.category !== this.lastCategory && q.expectedArtist !== this.lastArtist

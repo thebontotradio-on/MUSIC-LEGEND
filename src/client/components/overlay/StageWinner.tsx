@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { RoundResult } from '../../../server/types.js';
+import { TBRLogo } from '../common/TBRLogo.js';
 
 interface StageWinnerProps {
   round: RoundResult | null;
@@ -58,12 +59,12 @@ export const StageWinner: React.FC<StageWinnerProps> = ({ round }) => {
       </div>
 
       {/* 4. Top Celebration Banner */}
-      <div className="relative z-20 inline-flex items-center gap-3 px-8 py-3 rounded-full bg-gradient-to-r from-amber-500/25 via-yellow-400/35 to-amber-500/25 border-2 border-amber-400 mb-6 shadow-[0_0_35px_rgba(255,215,0,0.5)] animate-pulse-glow">
-        <span className="text-[34px] animate-bounce">👑</span>
-        <span className="text-[32px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-400 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+      <div className="relative z-20 inline-flex items-center gap-3 px-6 py-2 rounded-full bg-gradient-to-r from-amber-500/25 via-yellow-400/35 to-amber-500/25 border-2 border-amber-400 mb-6 shadow-[0_0_35px_rgba(255,215,0,0.5)] animate-pulse-glow">
+        <TBRLogo size="sm" variant="gold" />
+        <span className="text-[30px] font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 via-amber-200 to-yellow-400 uppercase drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
           WINNER SPOTLIGHT • ROUND #{round.roundNumber}
         </span>
-        <span className="text-[34px] animate-bounce">👑</span>
+        <span className="text-[30px] animate-bounce">👑</span>
       </div>
 
       {/* 5. 3D Holographic Winner Showcase Card */}

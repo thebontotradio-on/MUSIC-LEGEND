@@ -1,5 +1,6 @@
 import React from 'react';
 import { Question } from '../../../server/types.js';
+import { TBRLogo } from '../common/TBRLogo.js';
 
 interface StageGuessingProps {
   roundNumber: number;
@@ -51,10 +52,11 @@ export const StageGuessing: React.FC<StageGuessingProps> = ({
       {/* Header bar: Round badge, category, and points */}
       <div className="flex items-center justify-between w-full max-w-[920px] mb-4">
         <div className="flex items-center gap-3">
-          <div className="px-5 py-2 rounded-2xl bg-[#00F0FF]/15 border border-[#00F0FF]/60 text-[#00F0FF] text-[26px] font-black uppercase tracking-wider">
+          <TBRLogo size="md" variant="glow" />
+          <div className="px-4 py-2 rounded-2xl bg-[#00F0FF]/15 border border-[#00F0FF]/60 text-[#00F0FF] text-[24px] font-black uppercase tracking-wider">
             ROUND #{roundNumber}
           </div>
-          <div className="px-4 py-2 rounded-2xl bg-white/10 border border-white/20 text-white text-[24px] font-bold tracking-wide">
+          <div className="px-4 py-2 rounded-2xl bg-white/10 border border-white/20 text-white text-[22px] font-bold tracking-wide">
             {categoryLabels[question.category] || question.category}
           </div>
         </div>

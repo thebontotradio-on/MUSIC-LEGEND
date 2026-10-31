@@ -10,6 +10,7 @@ import { LeaderboardTable } from './LeaderboardTable.js';
 import { BridgeStatusPanel } from './BridgeStatusPanel.js';
 import { ArchiveViewer } from './ArchiveViewer.js';
 import { OverlayView } from '../overlay/OverlayView.js';
+import { TBRLogo } from '../common/TBRLogo.js';
 import { Radio, ExternalLink } from 'lucide-react';
 
 interface HostDashboardProps {
@@ -101,16 +102,18 @@ export const HostDashboard: React.FC<HostDashboardProps> = ({ gameState, onActio
     <div className="min-h-screen bg-[#07070d] text-white p-4 md:p-6 select-none font-sans">
       {/* Top Header */}
       <header className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-4 border-b border-white/10">
-        <div>
-          <div className="flex items-center gap-3">
-            <Radio className="w-8 h-8 text-[#00F0FF]" />
-            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-white to-[#8A2BE2]">
-              MUSIC LEGEND LIVE — DASHBOARD HOST
-            </h1>
+        <div className="flex items-center gap-4">
+          <TBRLogo size="lg" variant="glow" />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl md:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-white to-[#8A2BE2]">
+                MUSIC LEGEND LIVE — DASHBOARD HOST
+              </h1>
+            </div>
+            <p className="text-xs text-gray-400 mt-1">
+              THE BONTOT RADIO • Sesi: <span className="font-mono text-[#FFD700]">{gameState.sessionId || 'Belum Aktif'}</span> • Tagline: <strong className="text-gray-300">ONE LIVE. ONE CHAMPION.</strong>
+            </p>
           </div>
-          <p className="text-xs text-gray-400 mt-1">
-            THE BONTOT RADIO • Sesi: <span className="font-mono text-[#FFD700]">{gameState.sessionId || 'Belum Aktif'}</span> • Tagline: <strong className="text-gray-300">ONE LIVE. ONE CHAMPION.</strong>
-          </p>
         </div>
 
         <div className="flex items-center gap-3">

@@ -1,14 +1,18 @@
 import React from 'react';
+import { TBRLogo } from '../common/TBRLogo.js';
 
 export const StageIdle: React.FC = () => {
   return (
     <div className="flex flex-col items-center justify-center text-center px-8 py-10 w-full h-full select-none">
-      {/* Badge TBR */}
-      <div className="inline-flex items-center gap-3 px-6 py-2 rounded-full border border-[#00F0FF]/40 bg-[#00F0FF]/10 mb-6 backdrop-blur-md">
-        <span className="w-3.5 h-3.5 rounded-full bg-[#00F0FF] animate-ping" />
-        <span className="text-[24px] font-bold tracking-widest text-[#00F0FF] uppercase">
-          THE BONTOT RADIO • TIKTOK LIVE
-        </span>
+      {/* Official TBR Logo & Badge */}
+      <div className="flex flex-col items-center mb-4">
+        <TBRLogo size="xl" variant="glow" className="mb-3 hover:scale-105 transition-transform" />
+        <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[#00F0FF]/40 bg-[#00F0FF]/10 backdrop-blur-md">
+          <span className="w-3.5 h-3.5 rounded-full bg-[#00F0FF] animate-ping" />
+          <span className="text-[22px] font-black tracking-widest text-[#00F0FF] uppercase">
+            THE BONTOT RADIO • TIKTOK LIVE
+          </span>
+        </div>
       </div>
 
       {/* Main Title */}
@@ -45,4 +49,3 @@ export const StageIdle: React.FC = () => {
     </div>
   );
 };
-

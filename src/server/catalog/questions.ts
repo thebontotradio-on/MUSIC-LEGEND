@@ -1,4 +1,4 @@
-import { Question } from '../types.js';
+import type { Question } from '../types.js';
 
 export const QUESTION_CATALOG: Question[] = [
   // 1. TEBAK_JUDUL (Normal 100)
@@ -883,5 +883,381 @@ export const QUESTION_CATALOG: Question[] = [
     releaseEra: '1990s',
     points: 250
   }
-];
+,
 
+  {
+    id: 'Q061',
+    category: 'TEBAK_JUDUL',
+    difficulty: 'NORMAL',
+    prompt: "Lagu rock legendaris 1992 tentang kerinduan mendalam seorang kekasih yang jauh, dirilis pada album perdana Dewa 19 (19).",
+    hint: "Lirik pembuka: \"Kuterima suratmu, telah kubaca dan aku mengerti...\"",
+    expectedTitle: "Kangen",
+    expectedArtist: "Dewa 19",
+    titleAliases: ["Kangen","Kangen Dewa 19"],
+    artistAliases: ["Dewa 19","Dewa","Dewa19"],
+    year: 1992,
+    releaseEra: '1990s',
+    points: 100
+  },
+
+  {
+    id: 'Q062',
+    category: 'TEBAK_JUDUL',
+    difficulty: 'NORMAL',
+    prompt: "Lagu pop hits tahun 2000 tentang cinta segitiga tragis dengan sosok wanita misterius yang ternyata kekasih orang lain.",
+    hint: "Lagu hits dari album Kisah Klasik Untuk Masa Depan karya Sheila on 7.",
+    expectedTitle: "Sephia",
+    expectedArtist: "Sheila on 7",
+    titleAliases: ["Sephia"],
+    artistAliases: ["Sheila on 7","Sheila on Seven","SO7"],
+    year: 2000,
+    releaseEra: '2000s',
+    points: 100
+  },
+
+  {
+    id: 'Q063',
+    category: 'TEBAK_JUDUL',
+    difficulty: 'NORMAL',
+    prompt: "Lagu debut fenomenal Peterpan tahun 2002 yang dimasukkan ke album kompilasi Kisah 2002 Malam.",
+    hint: "Lirik refrein: \"Mungkinkah bila ku bertanya pada bintang-bintang...\"",
+    expectedTitle: "Mimpi Yang Sempurna",
+    expectedArtist: "Peterpan",
+    titleAliases: ["Mimpi Yang Sempurna","Mimpi Sempurna"],
+    artistAliases: ["Peterpan","Noah"],
+    year: 2002,
+    releaseEra: '2000s',
+    points: 100
+  },
+
+  {
+    id: 'Q064',
+    category: 'TEBAK_PENYANYI',
+    difficulty: 'NORMAL',
+    prompt: "Penyanyi balada legendaris Indonesia dengan suara puitis di balik lagu \"Berita Kepada Kawan\" dan \"Titip Rindu Buat Ayah\".",
+    hint: "Musisi asal Banjarnegara kelahiran 1954 yang sering mengangkat tema alam dan kemanusiaan.",
+    expectedTitle: "Berita Kepada Kawan",
+    expectedArtist: "Ebiet G Ade",
+    titleAliases: ["Berita Kepada Kawan","Titip Rindu Buat Ayah"],
+    artistAliases: ["Ebiet G Ade","Ebiet G. Ade","Ebiet"],
+    year: 1979,
+    releaseEra: '1970s',
+    points: 100
+  },
+
+  {
+    id: 'Q065',
+    category: 'TEBAK_PENYANYI',
+    difficulty: 'NORMAL',
+    prompt: "Musisi legendaris berjuluk \"Si Raja Dangdut\" yang mempopulerkan tembang \"Begadang\" dan \"Judi\".",
+    hint: "Pemimpin grup Soneta yang telah menciptakan ratusan lagu dangdut legendaris.",
+    expectedTitle: "Begadang",
+    expectedArtist: "Rhoma Irama",
+    titleAliases: ["Begadang","Judi"],
+    artistAliases: ["Rhoma Irama","Rhoma","Raja Dangdut"],
+    year: 1973,
+    releaseEra: '1970s',
+    points: 100
+  },
+
+  {
+    id: 'Q066',
+    category: 'TEKA_TEKI',
+    difficulty: 'HARD',
+    prompt: "🧩 TEKA-TEKI MUSIK: Tanggal pernikahan sang vokalis Armand Maulana dan Dewi Gita diabadikan menjadi judul lagu hits band GIGI tahun 2004. Lagu apakah itu?",
+    hint: "Lirik lagu: \"Sebelas Januari bertemu, menjalani kisah cinta ini...\"",
+    expectedTitle: "11 Januari",
+    expectedArtist: "Gigi",
+    titleAliases: ["11 Januari","Sebelas Januari"],
+    artistAliases: ["Gigi","Gigi Band"],
+    year: 2004,
+    releaseEra: '2000s',
+    points: 150
+  },
+
+  {
+    id: 'Q067',
+    category: 'TRIVIA',
+    difficulty: 'HARD',
+    prompt: "📚 TRIVIA MUSIK: Lagu legendaris Slank tahun 1991 yang diciptakan Bimbim di Gang Potlot dengan intro tiupan harmonika yang sangat khas.",
+    hint: "Lagu dari album Kampungan dengan lirik: \"Jangan pernah kau coba untuk berubah...\"",
+    expectedTitle: "Terlalu Manis",
+    expectedArtist: "Slank",
+    titleAliases: ["Terlalu Manis"],
+    artistAliases: ["Slank","Slank Band"],
+    year: 1991,
+    releaseEra: '1990s',
+    points: 150
+  },
+
+  {
+    id: 'Q068',
+    category: 'TEBAK_ERA',
+    difficulty: 'NORMAL',
+    prompt: "⏳ TEBAK ERA: Lagu ceria ciptaan Tonny Koeswoyo tentang kekayaan tanah air dengan lirik \"Bukan lautan hanya kolam susu, jaring dan jala cukup menghidupimu\".",
+    hint: "Dirilis oleh band legendaris bersaudara Koes Plus pada era 70-an.",
+    expectedTitle: "Kolam Susu",
+    expectedArtist: "Koes Plus",
+    titleAliases: ["Kolam Susu"],
+    artistAliases: ["Koes Plus","Koes Bersaudara"],
+    year: 1973,
+    releaseEra: '1970s',
+    points: 100
+  },
+
+  {
+    id: 'Q069',
+    category: 'EMOJI_PUZZLE',
+    difficulty: 'NORMAL',
+    prompt: "🧩 PUZZLE EMOJI: 👨‍🎤 💔 🥀 🎸 — Lagu rock slow patah hati tahun 2001 karya band Padi tentang kekasih yang tak bisa dimiliki.",
+    hint: "Lirik Fadly: \"Belum pernah kurasakan cinta yang seindah ini...\"",
+    expectedTitle: "Kasih Tak Sampai",
+    expectedArtist: "Padi",
+    titleAliases: ["Kasih Tak Sampai"],
+    artistAliases: ["Padi","Padi Reborn"],
+    year: 2001,
+    releaseEra: '2000s',
+    points: 100
+  },
+
+  {
+    id: 'Q070',
+    category: 'NOSTALGIA_80S',
+    difficulty: 'NORMAL',
+    prompt: "📻 NOSTALGIA 80-AN: Lagu pop riang 1985 ciptaan Aryono Huboyo Djati yang melambungkan nama \"Si Burung Camar\".",
+    hint: "Dinyanyikan oleh diva legendaris Vina Panduwinata.",
+    expectedTitle: "Burung Camar",
+    expectedArtist: "Vina Panduwinata",
+    titleAliases: ["Burung Camar"],
+    artistAliases: ["Vina Panduwinata","Vina"],
+    year: 1985,
+    releaseEra: '1980s',
+    points: 100
+  },
+
+  {
+    id: 'Q071',
+    category: 'NOSTALGIA_90S',
+    difficulty: 'NORMAL',
+    prompt: "📼 NOSTALGIA 90-AN: Lagu debut manis tahun 1996 dari band asal Jakarta dengan vokal Sigit Wardana dan Adon Saptowo.",
+    hint: "Lirik lagu: \"Mungkinkah kita kan slalu bersama walau terbentang jarak antara kita...\"",
+    expectedTitle: "Bermimpi",
+    expectedArtist: "Base Jam",
+    titleAliases: ["Bermimpi"],
+    artistAliases: ["Base Jam","Basejam"],
+    year: 1996,
+    releaseEra: '1990s',
+    points: 100
+  },
+
+  {
+    id: 'Q072',
+    category: 'NOSTALGIA_2000S',
+    difficulty: 'NORMAL',
+    prompt: "💿 NOSTALGIA 2000-AN: Lagu pop rock penuh energi tahun 2008 karya Kotak dengan riff gitar distorsi membakar panggung konser.",
+    hint: "Lirik Tantri: \"Kau pikir kau siapa, kau pikir kau hebat...\"",
+    expectedTitle: "Beraksi",
+    expectedArtist: "Kotak",
+    titleAliases: ["Beraksi"],
+    artistAliases: ["Kotak","Kotak Band"],
+    year: 2008,
+    releaseEra: '2000s',
+    points: 100
+  },
+
+  {
+    id: 'Q073',
+    category: 'PILIHAN_GANDA',
+    difficulty: 'NORMAL',
+    prompt: "📝 PILIHAN GANDA: Siapakah band pencipta lagu legendaris \"Laskar Pelangi\" yang menjadi soundtrack film Box Office Indonesia tahun 2008?",
+    options: ["Nidji","Peterpan","Ungu","D'Masiv"],
+    hint: "Band bervokalis Giring Ganesha.",
+    expectedTitle: "Laskar Pelangi",
+    expectedArtist: "Nidji",
+    titleAliases: ["Laskar Pelangi"],
+    artistAliases: ["Nidji","Nidji Band"],
+    year: 2008,
+    releaseEra: '2000s',
+    points: 100
+  },
+
+  {
+    id: 'Q074',
+    category: 'TEBAK_SOUNDTRACK',
+    difficulty: 'HARD',
+    prompt: "🎬 SOUNDTRACK FILM: Lagu tema film remaja fenomenal tahun 2002 \"Ada Apa Dengan Cinta?\" ciptaan Melly Goeslaw berduet dengan Eric.",
+    hint: "Lirik: \"Satu bentuk dua rasa, mungkinkah kita kan bersatu...\"",
+    expectedTitle: "Ada Apa Dengan Cinta",
+    expectedArtist: "Melly Goeslaw",
+    titleAliases: ["Ada Apa Dengan Cinta","AADC"],
+    artistAliases: ["Melly Goeslaw","Melly Goeslaw feat Eric","Melly"],
+    year: 2002,
+    releaseEra: '2000s',
+    points: 150
+  },
+
+  {
+    id: 'Q075',
+    category: 'TEBAK_INSTRUMEN',
+    difficulty: 'HARD',
+    prompt: "🪕 INSTRUMEN MUSIK: Alat musik petik tradisional berdawai khas Pulau Rote, Nusa Tenggara Timur yang wadah resonansinya terbuat dari anyaman daun lontar.",
+    hint: "Alat musik petik khas NTT.",
+    expectedTitle: "Sasando",
+    expectedArtist: "Tradisional NTT",
+    titleAliases: ["Sasando","Alat Musik Sasando"],
+    artistAliases: ["Tradisional NTT","Tradisional","NTT"],
+    year: 1900,
+    releaseEra: 'Traditional',
+    points: 150
+  },
+
+  {
+    id: 'Q076',
+    category: 'MUSIK_DAERAH',
+    difficulty: 'NORMAL',
+    prompt: "🏝️ MUSIK DAERAH: Lagu daerah riang gembira dari Papua yang sangat terkenal sebagai pengiring tarian pergaulan pemuda-pemudi.",
+    hint: "Lirik pembuka: \"Sajojo, sajojo, inam mendo mendo bicak bicak...\"",
+    expectedTitle: "Sajojo",
+    expectedArtist: "Lagu Daerah Papua",
+    titleAliases: ["Sajojo"],
+    artistAliases: ["Lagu Daerah Papua","Papua","Lagu Daerah"],
+    year: 1980,
+    releaseEra: 'Traditional',
+    points: 100
+  },
+
+  {
+    id: 'Q077',
+    category: 'MUSIK_DAERAH',
+    difficulty: 'NORMAL',
+    prompt: "🏝️ MUSIK DAERAH: Lagu daerah asal Maluku yang menggunakan pantun bersahut-sahutan tentang rasa kasih sayang dan persaudaraan.",
+    hint: "Lirik refrein: \"Rasa sayange, rasa sayang sayange, lihat nona dari jauh rasa sayang sayange...\"",
+    expectedTitle: "Rasa Sayange",
+    expectedArtist: "Lagu Daerah Maluku",
+    titleAliases: ["Rasa Sayange","Rasa Sayang Sayange"],
+    artistAliases: ["Lagu Daerah Maluku","Maluku","Lagu Daerah"],
+    year: 1907,
+    releaseEra: 'Traditional',
+    points: 100
+  },
+
+  {
+    id: 'Q078',
+    category: 'TEBAK_GENRE',
+    difficulty: 'NORMAL',
+    prompt: "🎷 TEBAK GENRE: Musik asli Indonesia perpaduan melodi Melayu, irama tabla India, dan aransemen modern yang memiliki goyangan gendang khas.",
+    hint: "Genre musik rakyat paling populer di Indonesia yang dipelopori Rhoma Irama.",
+    expectedTitle: "Dangdut",
+    expectedArtist: "Musik Indonesia",
+    titleAliases: ["Dangdut","Genre Dangdut"],
+    artistAliases: ["Musik Indonesia","Indonesia"],
+    year: 1970,
+    releaseEra: '1970s',
+    points: 100
+  },
+
+  {
+    id: 'Q079',
+    category: 'TEBAK_PETUNJUK',
+    difficulty: 'HARD',
+    prompt: "🔍 TEBAK DARI PETUNJUK: 1) Band asal Bandung 2) Lagu rilis 1995 3) Lirik: \"Kuharus menemani sepi seorang diri\" 4) Vokal manis Fatur.",
+    hint: "Lagu pop romantis karya Java Jive.",
+    expectedTitle: "Gerangan Cinta",
+    expectedArtist: "Java Jive",
+    titleAliases: ["Gerangan Cinta"],
+    artistAliases: ["Java Jive","Java Jive Band"],
+    year: 1995,
+    releaseEra: '1990s',
+    points: 150
+  },
+
+  {
+    id: 'Q080',
+    category: 'TEBAK_JUDUL',
+    difficulty: 'EXPERT',
+    prompt: "Lagu balada rock epik 1997 karya Dewa 19 tentang seseorang yang mengubur cintanya sedalam samudera demi kebahagiaan sang kekasih.",
+    hint: "Hits dari album Pandawa Lima dinyanyikan oleh Ari Lasso.",
+    expectedTitle: "Kirana",
+    expectedArtist: "Dewa 19",
+    titleAliases: ["Kirana"],
+    artistAliases: ["Dewa 19","Dewa","Dewa19"],
+    year: 1997,
+    releaseEra: '1990s',
+    points: 200
+  },
+
+  {
+    id: 'Q081',
+    category: 'TEBAK_PENYANYI',
+    difficulty: 'EXPERT',
+    prompt: "Penyanyi jazz dan pop bersuara bariton legendaris yang mempopulerkan tembang klasik \"Sakura\" (1980) dan \"Barcelona\" (1988).",
+    hint: "Musisi maestro yang terkenal dengan permainan keyboard dan brass section megah.",
+    expectedTitle: "Sakura",
+    expectedArtist: "Fariz RM",
+    titleAliases: ["Sakura","Barcelona"],
+    artistAliases: ["Fariz RM","Fariz Rustam Munaf","Fariz"],
+    year: 1980,
+    releaseEra: '1980s',
+    points: 200
+  },
+
+  {
+    id: 'Q082',
+    category: 'TRIVIA',
+    difficulty: 'EXPERT',
+    prompt: "📚 TRIVIA MUSIK: Lagu pembuka legendaris festival musik Indonesia dan hits radio 2005 karya Maliq & D'Essentials dengan lirik \"Terdengar bisikmu merdu...\"",
+    hint: "Lagu dari album 1st Special Edition yang melambungkan nama Angga Puradiredja.",
+    expectedTitle: "Untitled",
+    expectedArtist: "Maliq & D Essentials",
+    titleAliases: ["Untitled","Untitle"],
+    artistAliases: ["Maliq & D Essentials","Maliq","Maliq & D'Essentials"],
+    year: 2005,
+    releaseEra: '2000s',
+    points: 200
+  },
+
+  {
+    id: 'Q083',
+    category: 'SPECIAL_CHALLENGE',
+    difficulty: 'SPECIAL',
+    prompt: "🔥 SPECIAL CHALLENGE (+250 VP): Lagu progresif rock mahakarya God Bless tahun 1978 dengan intro organ megah Jockie Surjoprajogo yang menceritakan panggung sandiwara kehidupan.",
+    hint: "Ciptaan Ian Antono dan Taufiq Ismail, dinyanyikan lantang oleh Achmad Albar.",
+    expectedTitle: "Panggung Sandiwara",
+    expectedArtist: "God Bless",
+    titleAliases: ["Panggung Sandiwara","Dunia Panggung Sandiwara"],
+    artistAliases: ["God Bless","Godbless","Achmad Albar"],
+    year: 1978,
+    releaseEra: '1970s',
+    points: 250
+  },
+
+  {
+    id: 'Q084',
+    category: 'SPECIAL_CHALLENGE',
+    difficulty: 'SPECIAL',
+    prompt: "🔥 SPECIAL CHALLENGE (+250 VP): Mahakarya jazz pop 1977 karya Chrisye dalam album Badai Pasti Berlalu ciptaan Eros Djarot dengan aransemen Yockie Suryo Prayogo.",
+    hint: "Lirik abadi: \"Baju kurung bertabur manik... Mengapa ada duka...\"",
+    expectedTitle: "Badai Pasti Berlalu",
+    expectedArtist: "Chrisye",
+    titleAliases: ["Badai Pasti Berlalu"],
+    artistAliases: ["Chrisye","Krisye","Eros Djarot"],
+    year: 1977,
+    releaseEra: '1970s',
+    points: 250
+  },
+
+  {
+    id: 'Q085',
+    category: 'SPECIAL_CHALLENGE',
+    difficulty: 'SPECIAL',
+    prompt: "🔥 SPECIAL CHALLENGE (+250 VP): Lagu balada rock akustik Iwan Fals bersama grup Swami (1989) yang mengkritik keserakahan pengusaha korup berinisial B.",
+    hint: "Lirik pembuka menggelegar: \"Namaku Bento, rumah real estate, mobilku banyak, harta melimpah...\"",
+    expectedTitle: "Bento",
+    expectedArtist: "Iwan Fals",
+    titleAliases: ["Bento"],
+    artistAliases: ["Iwan Fals","Swami","Iwan Fals & Swami"],
+    year: 1989,
+    releaseEra: '1980s',
+    points: 250
+  }
+];

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Player } from '../../../server/types.js';
+import { TBRLogo } from '../common/TBRLogo.js';
 
 interface Top10LeaderboardProps {
   leaderboard: Player[];
@@ -45,9 +46,12 @@ export const Top10Leaderboard: React.FC<Top10LeaderboardProps> = ({
     <div className="flex flex-col items-center justify-between px-6 py-6 w-full h-full select-none text-center">
       {/* Header Bar */}
       <div className="mb-3 w-full max-w-[940px]">
-        <div className="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#00F0FF]/15 border border-[#00F0FF]/60 text-[#00F0FF] text-[22px] font-black uppercase tracking-widest mb-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]">
-          <span className="w-3 h-3 rounded-full bg-[#00F0FF] animate-ping" />
-          KLASEMEN SEMENTARA • TOP 10
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <TBRLogo size="md" variant="glow" />
+          <div className="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#00F0FF]/15 border border-[#00F0FF]/60 text-[#00F0FF] text-[22px] font-black uppercase tracking-widest shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+            <span className="w-3 h-3 rounded-full bg-[#00F0FF] animate-ping" />
+            KLASEMEN SEMENTARA • TOP 10
+          </div>
         </div>
         <h1 className="text-[44px] font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-white to-[#8A2BE2] drop-shadow-[0_4px_12px_rgba(0,240,255,0.5)]">
           MUSIC LEGEND LIVE

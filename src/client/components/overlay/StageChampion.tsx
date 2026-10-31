@@ -1,5 +1,6 @@
 import React from 'react';
 import type { Player, ChampionRewardRecord } from '../../../server/types.js';
+import { TBRLogo } from '../common/TBRLogo.js';
 
 interface StageChampionProps {
   leaderboard: Player[];
@@ -27,9 +28,12 @@ export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard, champ
   return (
     <div className="flex flex-col items-center justify-between px-6 py-6 w-full h-full select-none text-center">
       {/* Title Header */}
-      <div className="mb-2">
-        <div className="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#FFD700]/20 border border-[#FFD700] text-[#FFD700] text-[24px] font-black uppercase tracking-widest mb-2 shadow-[0_0_15px_rgba(255,215,0,0.4)]">
-          👑 FINAL SHOW — THE BONTOT RADIO
+      <div className="mb-2 flex flex-col items-center">
+        <div className="flex items-center justify-center gap-3 mb-2">
+          <TBRLogo size="md" variant="gold" />
+          <div className="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#FFD700]/20 border border-[#FFD700] text-[#FFD700] text-[24px] font-black uppercase tracking-widest shadow-[0_0_15px_rgba(255,215,0,0.4)]">
+            👑 FINAL SHOW — THE BONTOT RADIO
+          </div>
         </div>
         <h1 className="text-[52px] font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFFFFF] to-[#FFA500] drop-shadow-[0_4px_12px_rgba(255,215,0,0.5)]">
           PANGGUNG JUARA TOP 3
