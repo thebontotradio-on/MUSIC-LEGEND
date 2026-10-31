@@ -972,7 +972,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Gigi","Gigi Band"],
     year: 2004,
     releaseEra: '2000s',
-    points: 150
+    points: 200
   },
 
   {
@@ -987,7 +987,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Slank","Slank Band"],
     year: 1991,
     releaseEra: '1990s',
-    points: 150
+    points: 200
   },
 
   {
@@ -1093,7 +1093,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Melly Goeslaw","Melly Goeslaw feat Eric","Melly"],
     year: 2002,
     releaseEra: '2000s',
-    points: 150
+    points: 200
   },
 
   {
@@ -1108,7 +1108,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Tradisional NTT","Tradisional","NTT"],
     year: 1900,
     releaseEra: 'Traditional',
-    points: 150
+    points: 200
   },
 
   {
@@ -1168,7 +1168,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Java Jive","Java Jive Band"],
     year: 1995,
     releaseEra: '1990s',
-    points: 150
+    points: 200
   },
 
   {
@@ -1183,7 +1183,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Dewa 19","Dewa","Dewa19"],
     year: 1997,
     releaseEra: '1990s',
-    points: 200
+    points: 300
   },
 
   {
@@ -1198,7 +1198,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Fariz RM","Fariz Rustam Munaf","Fariz"],
     year: 1980,
     releaseEra: '1980s',
-    points: 200
+    points: 300
   },
 
   {
@@ -1213,7 +1213,7 @@ export const QUESTION_CATALOG: Question[] = [
     artistAliases: ["Maliq & D Essentials","Maliq","Maliq & D'Essentials"],
     year: 2005,
     releaseEra: '2000s',
-    points: 200
+    points: 300
   },
 
   {

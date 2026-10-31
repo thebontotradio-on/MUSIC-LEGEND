@@ -18,7 +18,11 @@ export interface CatalogValidationReport {
  * 2. Zero duplicate question prompt texts
  * 3. Unambiguous answers (non-empty expectedTitle and expectedArtist)
  * 4. Valid aliases with no empty or invalid tokens
- * 5. Difficulty and point consistency
+ * 5. Difficulty and point consistency according to official rules:
+ *    - NORMAL: 100 VP
+ *    - HARD: 200 VP
+ *    - EXPERT: 300 VP
+ *    - SPECIAL: 250 VP
  */
 export function validateQuestionCatalog(catalog: Question[]): CatalogValidationReport {
   const errors: string[] = [];
@@ -29,6 +33,13 @@ export function validateQuestionCatalog(catalog: Question[]): CatalogValidationR
   const categoryCounts: Record<string, number> = {};
   const difficultyCounts: Record<string, number> = {};
   let totalVP = 0;
+
+  const EXPECTED_DIFFICULTY_POINTS: Record<string, number> = {
+    NORMAL: 100,
+    HARD: 200,
+    EXPERT: 300,
+    SPECIAL: 250
+  };
 
   for (let i = 0; i < catalog.length; i++) {
     const q = catalog[i];
@@ -93,6 +104,13 @@ export function validateQuestionCatalog(catalog: Question[]): CatalogValidationR
       errors.push(`${indexLabel}: Invalid points "${q.points}". Must be positive number.`);
     } else {
       totalVP += q.points;
+      if (q.difficulty && EXPECTED_DIFFICULTY_POINTS[q.difficulty] !== undefined) {
+        if (q.points !== EXPECTED_DIFFICULTY_POINTS[q.difficulty]) {
+          errors.push(
+            `${indexLabel}: Scoring integrity violation for "${q.difficulty}". Expected ${EXPECTED_DIFFICULTY_POINTS[q.difficulty]} VP, got ${q.points} VP.`
+          );
+        }
+      }
     }
 
     if (q.category) {
