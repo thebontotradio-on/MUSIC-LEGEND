@@ -8,6 +8,7 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
   private activeMode: RVTikChatOutputMode = 'CLIPBOARD_ASSIST';
   private targetWindowPattern: string = 'TikTok';
   private bridgeEndpoint: string = 'http://127.0.0.1:4321/chat/send';
+  private authorizedSenders: string[] = ['thebontotradio', 'thebontotradio-on', 'adhy', 'host_adhy', 'host', 'bontotstudio', 'admin'];
   private recentCommands: RVTikChatCommandRecord[] = [];
   private lastCommand?: RVTikChatCommandRecord;
 
@@ -15,6 +16,7 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
     autoSendEnabled?: boolean;
     activeMode?: RVTikChatOutputMode;
     bridgeEndpoint?: string;
+    authorizedSenders?: string[];
   }) {
     if (options?.autoSendEnabled !== undefined) {
       this.autoSendEnabled = options.autoSendEnabled;
@@ -24,6 +26,9 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
     }
     if (options?.bridgeEndpoint) {
       this.bridgeEndpoint = options.bridgeEndpoint;
+    }
+    if (options?.authorizedSenders) {
+      this.setAuthorizedSenders(options.authorizedSenders);
     }
   }
 
@@ -36,6 +41,16 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
       recentCommands: [...this.recentCommands],
       lastCommand: this.lastCommand
     };
+  }
+
+  public setAuthorizedSenders(senders: string[]): void {
+    if (Array.isArray(senders)) {
+      this.authorizedSenders = senders.map((s) => s.trim().toLowerCase()).filter(Boolean);
+    }
+  }
+
+  public getAuthorizedSenders(): string[] {
+    return [...this.authorizedSenders];
   }
 
   public setMode(mode: RVTikChatOutputMode): void {
@@ -107,7 +122,7 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
     try {
       if (mode === 'CLIPBOARD_ASSIST') {
         await this.copyToClipboard(targetRecord.command);
-        targetRecord.status = 'SENT';
+        targetRecord.status = 'COPIED_TO_CLIPBOARD';
       } else if (mode === 'WINDOW_AUTOMATION') {
         const injected = await this.injectToWindow(targetRecord.command, this.targetWindowPattern);
         if (injected.success) {
@@ -135,20 +150,39 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
     return targetRecord;
   }
 
-  public verifyIncomingMessage(message: string, username: string): boolean {
+  public verifyIncomingMessage(message: string, username: string, timestamp?: number): boolean {
     if (!this.lastCommand || this.lastCommand.verifiedInChat) {
       return false;
     }
 
-    const normIncoming = message.trim().toLowerCase();
-    const normCommand = this.lastCommand.command.trim().toLowerCase();
+    const normUsername = (username || '').trim().toLowerCase();
+    const isAuthorized = this.authorizedSenders.some(
+      (auth) => normUsername === auth || normUsername.startsWith('host_') || normUsername === 'host'
+    );
 
-    if (normIncoming === normCommand) {
-      this.lastCommand.verifiedInChat = true;
-      return true;
+    // Reject if sender is not host/authorized account
+    if (!isAuthorized) {
+      return false;
     }
 
-    return false;
+    // Exact command syntax correlation
+    const normIncoming = (message || '').trim().toLowerCase();
+    const normCommand = this.lastCommand.command.trim().toLowerCase();
+
+    if (normIncoming !== normCommand) {
+      return false;
+    }
+
+    // Correlation timing check: message must arrive within reasonable window of dispatch
+    // Default window: 120 seconds, with up to 5s clock skew tolerance before dispatch
+    const eventTime = timestamp || Date.now();
+    const diff = eventTime - this.lastCommand.sentAt;
+    if (diff < -5000 || diff > 120_000) {
+      return false;
+    }
+
+    this.lastCommand.verifiedInChat = true;
+    return true;
   }
 
   public clearHistory(): void {
@@ -228,3 +262,4 @@ export class RVTikChatOutputAdapter implements IRVTikChatOutputAdapter {
     }
   }
 }
+

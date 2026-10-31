@@ -110,7 +110,7 @@ export interface PlaybackBridgeStatus {
 }
 
 export type RVTikChatOutputMode = 'CLIPBOARD_ASSIST' | 'WINDOW_AUTOMATION' | 'DIRECT_BRIDGE' | 'SIMULATION';
-export type RVTikChatCommandStatus = 'PENDING' | 'SENT' | 'FAILED' | 'NOT_VERIFIED';
+export type RVTikChatCommandStatus = 'PENDING' | 'SENT' | 'COPIED_TO_CLIPBOARD' | 'FAILED' | 'NOT_VERIFIED';
 
 export interface RVTikChatCommandRecord {
   id: string;

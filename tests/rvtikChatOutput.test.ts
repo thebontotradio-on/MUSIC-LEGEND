@@ -59,18 +59,34 @@ describe('RVTIK CHAT COMMAND OUTPUT & STANDALONE WORKFLOW TESTS', () => {
     assert.equal(status.lastCommand?.status, 'SENT');
   });
 
-  test('4. Live Chat Ingress Verification: Confirms command physically appeared in TikTok LIVE chat', () => {
+  test('4. Live Chat Ingress Verification: Confirms command physically appeared in TikTok LIVE chat with sender & correlation protection', () => {
     adapter.prepareCommand('Dan', 'Sheila on 7', 'Duta_Fans');
 
     // Unrelated viewer chats
     assert.equal(adapter.verifyIncomingMessage('halo bang adhy', 'random_viewer'), false);
     assert.equal(adapter.verifyIncomingMessage('!jawab Dan Sheila on 7', 'quiz_player'), false);
+
+    // Viewer spoof attempt: typing !play command from unauthorized account is rejected
+    assert.equal(adapter.verifyIncomingMessage('!play Dan Sheila on 7', 'random_viewer_99'), false);
     assert.equal(adapter.getStatus().lastCommand?.verifiedInChat, false);
 
-    // Host / bot sends !play command to TikTok LIVE chat
-    const verified = adapter.verifyIncomingMessage('!play Dan Sheila on 7', 'host_adhy');
+    // Stale message (> 120s diff) is rejected
+    assert.equal(adapter.verifyIncomingMessage('!play Dan Sheila on 7', 'host_adhy', Date.now() - 200_000), false);
+
+    // Authorized host / bot sends !play command to TikTok LIVE chat within valid window
+    const verified = adapter.verifyIncomingMessage('!play Dan Sheila on 7', 'host_adhy', Date.now());
     assert.equal(verified, true);
     assert.equal(adapter.getStatus().lastCommand?.verifiedInChat, true);
+  });
+
+  test('4b. Clipboard Assist Mode sets COPIED_TO_CLIPBOARD status and never marks command as SENT to chat', async () => {
+    const clipAdapter = new RVTikChatOutputAdapter({ activeMode: 'CLIPBOARD_ASSIST' });
+    const record = clipAdapter.prepareCommand('Kangen', 'Dewa 19', 'Baladewa_Jawara');
+    assert.equal(record.status, 'PENDING');
+
+    const result = await clipAdapter.dispatchCommand(record.id);
+    assert.equal(result.status, 'COPIED_TO_CLIPBOARD', 'Must reflect clipboard copy, not fake auto-send to chat');
+    assert.equal(result.verifiedInChat, false, 'Remains unverified until live chat confirmation');
   });
 
   test('5. Window Automation Fallback: Reports graceful failure when TikTok Live Studio is not open', async () => {
@@ -153,3 +169,4 @@ describe('RVTIK CHAT COMMAND OUTPUT & STANDALONE WORKFLOW TESTS', () => {
     assert.equal(engine.getState().audio.bgmPlaying, true, 'BGM resumes for next round');
   });
 });
+

@@ -52,7 +52,7 @@ export const RVTikChatOutputPanel: React.FC<RVTikChatOutputPanelProps> = ({
               onChange={(e) => onToggleAutoSend(e.target.checked)}
               className="accent-[#00F0FF]"
             />
-            <span>Auto-Send saat Pemenang Terkunci</span>
+            <span>{activeMode === 'CLIPBOARD_ASSIST' ? 'Auto-Salin ke Clipboard saat Pemenang' : 'Auto-Send saat Pemenang Terkunci'}</span>
           </label>
         </div>
       </div>
@@ -131,6 +131,8 @@ export const RVTikChatOutputPanel: React.FC<RVTikChatOutputPanelProps> = ({
                   className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                     lastCmd.verifiedInChat
                       ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40'
+                      : lastCmd.status === 'COPIED_TO_CLIPBOARD'
+                      ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/40'
                       : lastCmd.status === 'SENT'
                       ? 'bg-blue-500/20 text-blue-400 border border-blue-500/40'
                       : lastCmd.status === 'FAILED'
@@ -140,6 +142,8 @@ export const RVTikChatOutputPanel: React.FC<RVTikChatOutputPanelProps> = ({
                 >
                   {lastCmd.verifiedInChat
                     ? 'TERVERIFIKASI DI CHAT LIVE'
+                    : lastCmd.status === 'COPIED_TO_CLIPBOARD'
+                    ? 'TERSALIN KE CLIPBOARD (MENUNGGU PASTE OLEH HOST)'
                     : `STATUS: ${lastCmd.status}`}
                 </span>
               )}
@@ -208,3 +212,4 @@ export const RVTikChatOutputPanel: React.FC<RVTikChatOutputPanelProps> = ({
     </div>
   );
 };
+
