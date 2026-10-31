@@ -1,0 +1,102 @@
+:root {
+  --color-bg-dark: #07070d;
+  --color-neon-cyan: #00F0FF;
+  --color-neon-purple: #8A2BE2;
+  --color-neon-magenta: #FF007F;
+  --color-neon-gold: #FFD700;
+  --font-primary: 'Plus Jakarta Sans', 'Inter', 'Roboto', sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-primary);
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  color: #FFFFFF;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Glassmorphism styling with high contrast readability */
+.glass-panel {
+  background: rgba(14, 16, 28, 0.88);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(0, 240, 255, 0.25);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.7);
+}
+
+.glass-panel-gold {
+  background: rgba(25, 20, 10, 0.9);
+  backdrop-filter: blur(16px);
+  border: 2px solid rgba(255, 215, 0, 0.6);
+  box-shadow: 0 0 25px rgba(255, 215, 0, 0.35);
+}
+
+.neon-text-cyan {
+  color: #00F0FF;
+  text-shadow: 0 0 12px rgba(0, 240, 255, 0.6);
+}
+
+.neon-text-purple {
+  color: #c084fc;
+  text-shadow: 0 0 12px rgba(138, 43, 226, 0.6);
+}
+
+.neon-text-gold {
+  color: #FFD700;
+  text-shadow: 0 0 16px rgba(255, 215, 0, 0.75);
+}
+
+.neon-border-cyan {
+  border: 1px solid #00F0FF;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.3);
+}
+
+.neon-border-purple {
+  border: 1px solid #8A2BE2;
+  box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+}
+
+/* 9:16 Portrait Canvas Container (1080 x 1920) */
+.obs-portrait-container {
+  width: 1080px;
+  height: 1920px;
+  position: relative;
+  overflow: hidden;
+  background-color: #050508;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% {
+    opacity: 0.85;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.02);
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 2.5s infinite ease-in-out;
+}
+
+@keyframes sweepLighting {
+  0% { transform: translateX(-100%); }
+  50% { transform: translateX(100%); }
+  100% { transform: translateX(-100%); }
+}
+
+.animate-sweep-light {
+  animation: sweepLighting 6s infinite ease-in-out;
+}
