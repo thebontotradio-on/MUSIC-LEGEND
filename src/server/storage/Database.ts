@@ -59,6 +59,16 @@ export class AppDatabase {
         updated_at INTEGER NOT NULL
       );
     `);
+
+    // Persistent question usage history table
+    this.db.exec(`
+      CREATE TABLE IF NOT EXISTS question_usage_history (
+        question_id TEXT PRIMARY KEY,
+        last_used_at INTEGER NOT NULL,
+        times_used INTEGER DEFAULT 1,
+        last_session_id TEXT
+      );
+    `);
   }
 
   public getRawDb(): DatabaseSync {

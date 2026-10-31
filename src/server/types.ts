@@ -13,9 +13,29 @@ export type QuestionCategory =
   | 'NOSTALGIA_90S'
   | 'NOSTALGIA_2000S'
   | 'PILIHAN_GANDA'
-  | 'SPECIAL_CHALLENGE';
+  | 'SPECIAL_CHALLENGE'
+  | 'TEBAK_GENRE'
+  | 'TEBAK_SOUNDTRACK'
+  | 'TEBAK_INSTRUMEN'
+  | 'TEBAK_PETUNJUK'
+  | 'MUSIK_DAERAH';
 
 export type QuestionDifficulty = 'NORMAL' | 'HARD' | 'EXPERT' | 'SPECIAL';
+
+export interface QuestionUsageRecord {
+  questionId: string;
+  lastUsedAt: number;
+  timesUsed: number;
+  lastSessionId?: string;
+}
+
+export interface CatalogStats {
+  totalQuestions: number;
+  categories: Record<string, number>;
+  difficulties: Record<string, number>;
+  usedInSession: number;
+  totalHistoricalUsed: number;
+}
 
 export interface Question {
   id: string;

@@ -158,3 +158,4 @@ export const Top10Leaderboard: React.FC<Top10LeaderboardProps> = ({
     </div>
   );
 };
+

@@ -1,24 +1,66 @@
-import { Question, RoundResult } from '../types.js';
+import { Question, RoundResult, CatalogStats, QuestionCategory, QuestionDifficulty } from '../types.js';
 import { QUESTION_CATALOG } from '../catalog/questions.js';
 
 export class RoundManager {
   private questions: Question[] = [...QUESTION_CATALOG];
-  private currentQuestionIndex: number = -1;
   private currentRound: RoundResult | null = null;
   private roundCount: number = 0;
   private isLocked: boolean = false;
 
-  constructor(customCatalog?: Question[]) {
+  // Question Intelligence & Anti-Repetition State
+  private usedInSession: Set<string> = new Set();
+  private persistentHistoryIds: Set<string> = new Set();
+  private lastCategory: string | null = null;
+  private lastArtist: string | null = null;
+
+  constructor(customCatalog?: Question[], initialHistoryIds?: string[]) {
     if (customCatalog && customCatalog.length > 0) {
       this.questions = [...customCatalog];
+    }
+    if (initialHistoryIds && initialHistoryIds.length > 0) {
+      this.persistentHistoryIds = new Set(initialHistoryIds);
     }
   }
 
   public reset(): void {
-    this.currentQuestionIndex = -1;
     this.currentRound = null;
     this.roundCount = 0;
     this.isLocked = false;
+    this.usedInSession.clear();
+    this.lastCategory = null;
+    this.lastArtist = null;
+  }
+
+  public setHistoryQuestionIds(ids: string[]): void {
+    this.persistentHistoryIds = new Set(ids);
+  }
+
+  public addQuestions(newQuestions: Question[]): void {
+    for (const q of newQuestions) {
+      if (!this.questions.some(existing => existing.id === q.id)) {
+        this.questions.push(q);
+      }
+    }
+  }
+
+  public getUsedInSession(): string[] {
+    return Array.from(this.usedInSession);
+  }
+
+  public getCatalogStats(): CatalogStats {
+    const categories: Record<string, number> = {};
+    const difficulties: Record<string, number> = {};
+    for (const q of this.questions) {
+      categories[q.category] = (categories[q.category] || 0) + 1;
+      difficulties[q.difficulty] = (difficulties[q.difficulty] || 0) + 1;
+    }
+    return {
+      totalQuestions: this.questions.length,
+      categories,
+      difficulties,
+      usedInSession: this.usedInSession.size,
+      totalHistoricalUsed: this.persistentHistoryIds.size
+    };
   }
 
   public isQuestionLocked(): boolean {
@@ -43,8 +85,13 @@ export class RoundManager {
 
   /**
    * Starts a new round with the next question (or specific question)
+   * Integrates Anti-Repetition and Question Intelligence
    */
-  public startNewRound(specificQuestionId?: string, isBonus: boolean = false): RoundResult {
+  public startNewRound(
+    specificQuestionId?: string,
+    isBonus: boolean = false,
+    filter?: { category?: QuestionCategory; difficulty?: QuestionDifficulty }
+  ): RoundResult {
     let question: Question;
 
     if (specificQuestionId) {
@@ -54,9 +101,14 @@ export class RoundManager {
       }
       question = found;
     } else {
-      this.currentQuestionIndex = (this.currentQuestionIndex + 1) % this.questions.length;
-      question = this.questions[this.currentQuestionIndex];
+      question = this.selectSmartNextQuestion(filter);
     }
+
+    // Mark as used in session and in history
+    this.usedInSession.add(question.id);
+    this.persistentHistoryIds.add(question.id);
+    this.lastCategory = question.category;
+    this.lastArtist = question.expectedArtist;
 
     if (isBonus) {
       // Create bonus version of question with extra points
@@ -78,6 +130,58 @@ export class RoundManager {
     };
 
     return this.currentRound;
+  }
+
+  /**
+   * Smart question selection adhering to Anti-Repetition and Category/Era rotation
+   */
+  private selectSmartNextQuestion(filter?: { category?: QuestionCategory; difficulty?: QuestionDifficulty }): Question {
+    // 1. Base candidates matching filter if provided
+    let pool = this.questions;
+    if (filter?.category) {
+      const catFiltered = pool.filter(q => q.category === filter.category);
+      if (catFiltered.length > 0) pool = catFiltered;
+    }
+    if (filter?.difficulty) {
+      const diffFiltered = pool.filter(q => q.difficulty === filter.difficulty);
+      if (diffFiltered.length > 0) pool = diffFiltered;
+    }
+
+    // 2. Candidates not yet used in current session
+    let available = pool.filter(q => !this.usedInSession.has(q.id));
+
+    // If all questions in the pool have been used in current session, recycle session history
+    // while excluding the immediately previous question to prevent immediate repeat
+    if (available.length === 0) {
+      const lastId = this.currentRound?.question?.id;
+      this.usedInSession.clear();
+      available = pool.filter(q => q.id !== lastId);
+      if (available.length === 0) {
+        available = pool;
+      }
+    }
+
+    // 3. Prioritize questions not in persistent history across sessions
+    const neverUsedHistory = available.filter(q => !this.persistentHistoryIds.has(q.id));
+    const candidateGroup = neverUsedHistory.length > 0 ? neverUsedHistory : available;
+
+    // 4. Smart rotation: prefer questions with different category and artist than last question
+    if (candidateGroup.length > 1 && (this.lastCategory || this.lastArtist)) {
+      const rotated = candidateGroup.filter(q =>
+        q.category !== this.lastCategory && q.expectedArtist !== this.lastArtist
+      );
+      if (rotated.length > 0) {
+        return rotated[Math.floor(Math.random() * rotated.length)];
+      }
+
+      const diffCategory = candidateGroup.filter(q => q.category !== this.lastCategory);
+      if (diffCategory.length > 0) {
+        return diffCategory[Math.floor(Math.random() * diffCategory.length)];
+      }
+    }
+
+    // 5. Select from candidates
+    return candidateGroup[Math.floor(Math.random() * candidateGroup.length)];
   }
 
   /**
@@ -116,4 +220,3 @@ export class RoundManager {
     this.isLocked = true;
   }
 }
-

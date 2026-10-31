@@ -197,6 +197,18 @@ app.get('/api/host/rewards', (req, res) => {
   res.json(gameEngine.getChampionRewards());
 });
 
+app.get('/api/host/catalog-stats', (_req, res) => {
+  res.json({ success: true, stats: gameEngine.getCatalogStats() });
+});
+
+app.post('/api/host/add-questions', (req, res) => {
+  const { questions } = req.body || {};
+  if (Array.isArray(questions)) {
+    gameEngine.addQuestions(questions);
+  }
+  res.json({ success: true, stats: gameEngine.getCatalogStats() });
+});
+
 app.post('/api/host/end-session', (req, res) => {
   const summary = gameEngine.endSession();
   res.json({ success: true, summary, state: gameEngine.getState() });

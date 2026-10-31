@@ -65,7 +65,65 @@ export class SessionArchiveService {
         r.startedAt,
         r.endedAt || Date.now()
       );
+      // Auto-record question usage for cross-session history
+      if (r.question?.id) {
+        this.recordQuestionUsage(r.question.id, summary.id);
+      }
     }
+  }
+
+  /**
+   * Records or updates usage count & timestamp of a question
+   */
+  public recordQuestionUsage(questionId: string, sessionId?: string): void {
+    const rawDb = this.db.getRawDb();
+    try {
+      const existing = rawDb.prepare(`
+        SELECT question_id, times_used FROM question_usage_history WHERE question_id = ?
+      `).get(questionId) as { question_id: string; times_used: number } | undefined;
+
+      const timesUsed = existing ? (existing.times_used || 1) + 1 : 1;
+      const stmt = rawDb.prepare(`
+        INSERT OR REPLACE INTO question_usage_history (
+          question_id, last_used_at, times_used, last_session_id
+        ) VALUES (?, ?, ?, ?)
+      `);
+      stmt.run(questionId, Date.now(), timesUsed, sessionId || null);
+    } catch (err) {
+      console.warn('[SessionArchiveService] Error recording question usage:', err);
+    }
+  }
+
+  /**
+   * Retrieves list of recently used question IDs (most recent first)
+   */
+  public getUsedQuestionIds(limit: number = 100): string[] {
+    const rawDb = this.db.getRawDb();
+    try {
+      const rows = rawDb.prepare(`
+        SELECT question_id FROM question_usage_history ORDER BY last_used_at DESC LIMIT ?
+      `).all(limit) as { question_id: string }[];
+      return rows.map(r => r.question_id);
+    } catch {
+      return [];
+    }
+  }
+
+  /**
+   * Returns question usage statistics map
+   */
+  public getQuestionUsageStats(): Map<string, { lastUsedAt: number; timesUsed: number }> {
+    const map = new Map<string, { lastUsedAt: number; timesUsed: number }>();
+    const rawDb = this.db.getRawDb();
+    try {
+      const rows = rawDb.prepare(`
+        SELECT question_id, last_used_at, times_used FROM question_usage_history
+      `).all() as { question_id: string; last_used_at: number; times_used: number }[];
+      for (const r of rows) {
+        map.set(r.question_id, { lastUsedAt: r.last_used_at, timesUsed: r.times_used });
+      }
+    } catch {}
+    return map;
   }
 
   /**

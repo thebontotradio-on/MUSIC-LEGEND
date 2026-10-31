@@ -125,6 +125,13 @@ export class GameEngine {
     this.playerManager.reset();
     this.tap2Aggregator.reset();
     this.roundManager.reset();
+
+    // Load historical question usage for Question Intelligence & Anti-Repetition
+    try {
+      const historicalIds = this.archiveService.getUsedQuestionIds(100);
+      this.roundManager.setHistoryQuestionIds(historicalIds);
+    } catch {}
+
     this.sessionManager.startNewSession();
     this.stage = 'IDLE';
     this.bgmPlaying = true;
@@ -132,12 +139,15 @@ export class GameEngine {
     this.notify();
   }
 
-  public startRound(specificQuestionId?: string): RoundResult {
+  public startRound(
+    specificQuestionId?: string,
+    filter?: { category?: any; difficulty?: any }
+  ): RoundResult {
     if (!this.sessionManager.isSessionActive()) {
       this.startGame();
     }
 
-    const round = this.roundManager.startNewRound(specificQuestionId, false);
+    const round = this.roundManager.startNewRound(specificQuestionId, false, filter);
     this.stage = 'GUESSING';
     this.bgmPlaying = true;
     this.lastAnnouncement = `Round #${round.roundNumber}: ${round.question.prompt}`;
@@ -145,17 +155,29 @@ export class GameEngine {
     return round;
   }
 
-  public startBonusRound(specificQuestionId?: string): RoundResult {
+  public startBonusRound(
+    specificQuestionId?: string,
+    filter?: { category?: any; difficulty?: any }
+  ): RoundResult {
     if (!this.sessionManager.isSessionActive()) {
       this.startGame();
     }
 
-    const round = this.roundManager.startNewRound(specificQuestionId, true);
+    const round = this.roundManager.startNewRound(specificQuestionId, true, filter);
     this.stage = 'GUESSING';
     this.bgmPlaying = true;
     this.lastAnnouncement = `⭐ BONUS ROUND #${round.roundNumber}!`;
     this.notify();
     return round;
+  }
+
+  public getCatalogStats() {
+    return this.roundManager.getCatalogStats();
+  }
+
+  public addQuestions(newQuestions: any[]): void {
+    this.roundManager.addQuestions(newQuestions);
+    this.notify();
   }
 
   /**
@@ -360,6 +382,13 @@ export class GameEngine {
     // Switch stage to WINNER
     this.stage = 'WINNER';
     this.lastAnnouncement = `🎉 ${player.nickname} MENANG! (+${scoringResult.totalPointsAwarded} VP)`;
+
+    // Question Intelligence: Record question usage for anti-repetition tracking
+    if (currentQuestion?.id) {
+      try {
+        this.archiveService.recordQuestionUsage(currentQuestion.id, this.sessionManager.getSessionId());
+      } catch {}
+    }
 
     // PHASE 4 REQUIREMENT B: Decouple playback per round winner
     // Answering correctly adds score without triggering playback of answer song.

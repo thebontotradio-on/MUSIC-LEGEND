@@ -263,5 +263,129 @@ describe('RVTIK CHAT COMMAND OUTPUT & STANDALONE WORKFLOW TESTS', () => {
     const allArchives = archiveService.getAllSessions();
     assert.ok(allArchives.find((s) => s.id === summary.id));
   });
+
+  test('8. Phase 5 Question Intelligence & Anti-Repetition Engine', async () => {
+    const rvtikAdapter = new RVTikChatOutputAdapter({ activeMode: 'SIMULATION' });
+    const playbackBridge = new RVTikPlaybackBridge(rvtikAdapter);
+    const tiktokConnector = new MockTikTokConnector();
+
+    const db = new AppDatabase();
+    const archiveService = new SessionArchiveService(db);
+    const roundManager = new RoundManager(QUESTION_CATALOG);
+    const sessionManager = new SessionManager(archiveService);
+    const tap2Aggregator = new Tap2Aggregator();
+    const playerManager = new PlayerIdentityManager();
+
+    const engine = new GameEngine(
+      roundManager,
+      sessionManager,
+      tap2Aggregator,
+      playerManager,
+      playbackBridge,
+      tiktokConnector,
+      archiveService
+    );
+
+    engine.startGame();
+
+    // 1. Catalog Sizing & Variety Check (60 questions across 15 categories)
+    const stats = engine.getCatalogStats();
+    assert.ok(stats.totalQuestions >= 60, `Catalog must have at least 60 questions, got ${stats.totalQuestions}`);
+    assert.ok(Object.keys(stats.categories).length >= 15, 'Catalog must span at least 15 categories');
+    assert.ok(stats.difficulties.NORMAL && stats.difficulties.HARD && stats.difficulties.EXPERT && stats.difficulties.SPECIAL);
+
+    // 2. In-Session Anti-Repetition: 10 consecutive rounds must produce 10 unique questions
+    const seenQuestionIds: string[] = [];
+    const seenCategories: string[] = [];
+
+    for (let i = 0; i < 10; i++) {
+      const round = engine.startRound();
+      assert.ok(round.question, 'Round must have a question');
+      assert.ok(!seenQuestionIds.includes(round.question.id), `Question ${round.question.id} must not repeat within active session`);
+      seenQuestionIds.push(round.question.id);
+      seenCategories.push(round.question.category);
+      engine.next();
+    }
+
+    assert.equal(new Set(seenQuestionIds).size, 10, 'All 10 questions must be strictly unique');
+
+    // 3. Category rotation minimization
+    let consecutiveSame = 0;
+    for (let i = 1; i < seenCategories.length; i++) {
+      if (seenCategories[i] === seenCategories[i - 1]) consecutiveSame++;
+    }
+    assert.ok(consecutiveSame <= 1, 'Category rotation must minimize consecutive same categories');
+
+    // 4. Cross-Session SQLite Persistence of question history
+    archiveService.recordQuestionUsage('Q019', 'sess_standalone_1');
+    archiveService.recordQuestionUsage('Q020', 'sess_standalone_1');
+    const usedHistory = archiveService.getUsedQuestionIds(10);
+    assert.ok(usedHistory.includes('Q019'));
+    assert.ok(usedHistory.includes('Q020'));
+
+    // 5. Dynamic Question Addition
+    const initialTotal = engine.getCatalogStats().totalQuestions;
+    engine.addQuestions([
+      {
+        id: 'Q_STANDALONE_CUSTOM',
+        category: 'TRIVIA',
+        difficulty: 'NORMAL',
+        prompt: 'Pertanyaan khusus siaran Standalone?',
+        hint: 'Petunjuk khusus',
+        expectedTitle: 'Lagu Baru Standalone',
+        expectedArtist: 'Artis Baru',
+        titleAliases: ['Lagu Baru Standalone'],
+        artistAliases: ['Artis Baru'],
+        points: 100
+      }
+    ]);
+    assert.equal(engine.getCatalogStats().totalQuestions, initialTotal + 1);
+  });
+
+  test('9. Phase 5 3D Winner Spotlight & Mobile Typography Readability', async () => {
+    const rvtikAdapter = new RVTikChatOutputAdapter({ activeMode: 'SIMULATION' });
+    const playbackBridge = new RVTikPlaybackBridge(rvtikAdapter);
+    const tiktokConnector = new MockTikTokConnector();
+
+    const db = new AppDatabase();
+    const archiveService = new SessionArchiveService(db);
+    const roundManager = new RoundManager(QUESTION_CATALOG);
+    const sessionManager = new SessionManager(archiveService);
+    const tap2Aggregator = new Tap2Aggregator();
+    const playerManager = new PlayerIdentityManager();
+
+    const engine = new GameEngine(
+      roundManager,
+      sessionManager,
+      tap2Aggregator,
+      playerManager,
+      playbackBridge,
+      tiktokConnector,
+      archiveService
+    );
+
+    engine.startGame();
+    engine.startRound('Q001'); // Separuh Aku - Noah
+
+    // Winner answers with avatar
+    tiktokConnector.simulateComment({
+      userId: 'user_star_winner',
+      nickname: 'Sultan Bontot',
+      text: '!jawab Separuh Aku Noah',
+      avatarUrl: 'https://p16-sign-va.tiktokcdn.com/tos-maliva-avt-0068/star_avatar.jpeg'
+    });
+
+    const state = engine.getState();
+    assert.equal(state.stage, 'WINNER');
+    const winner = state.currentRound?.winner;
+    assert.equal(winner?.player.id, 'user_star_winner');
+    assert.equal(winner?.player.nickname, 'Sultan Bontot');
+    assert.equal(winner?.player.avatarUrl, 'https://p16-sign-va.tiktokcdn.com/tos-maliva-avt-0068/star_avatar.jpeg');
+
+    // Safe zone portrait 9:16 readability
+    const safeZone = state.safeZone;
+    assert.ok(safeZone.width >= 80 && safeZone.width <= 100);
+    assert.ok(safeZone.chatExclusionHeight >= 20);
+  });
 });
 

@@ -16,9 +16,14 @@ export const HostControls: React.FC<HostControlsProps> = ({ gameState, onAction 
   return (
     <div className="bg-[#121320] border border-white/10 rounded-2xl p-5 shadow-xl">
       <div className="flex items-center justify-between mb-4 border-b border-white/10 pb-3">
-        <h2 className="text-xl font-black text-white flex items-center gap-2">
-          🎮 KENDALI HOST (THE BONTOT RADIO)
-        </h2>
+        <div className="flex flex-col">
+          <h2 className="text-xl font-black text-white flex items-center gap-2">
+            🎮 KENDALI HOST (THE BONTOT RADIO)
+          </h2>
+          <span className="text-xs text-cyan-400 font-semibold flex items-center gap-1.5 mt-0.5">
+            <span>🧠</span> Question Intelligence: 60 Soal • 15 Kategori • Anti-Repetition Aktif
+          </span>
+        </div>
         <div className="flex items-center gap-2">
           <span
             className={`px-3 py-1 rounded-full text-xs font-bold ${
