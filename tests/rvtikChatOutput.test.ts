@@ -144,13 +144,16 @@ describe('RVTIK CHAT COMMAND OUTPUT & STANDALONE WORKFLOW TESTS', () => {
     assert.equal(state.currentRound?.winner?.player.id, 'winner_101');
     assert.equal(state.audio.bgmPlaying, false, 'BGM stops when winner is locked');
 
-    // Verify RVTik command was prepared
+    // Phase 4 Requirement: Winner lock must NOT automatically trigger RVTik playback bridge
     const rvtikStatus = rvtikAdapter.getStatus();
-    assert.ok(rvtikStatus.lastCommand);
-    assert.equal(rvtikStatus.lastCommand?.command, '!play Separuh Aku Noah');
+    assert.equal(rvtikStatus.lastCommand, undefined, 'Phase 4: Round winner lock must NOT trigger playback bridge or auto !play command');
+
+    // Host or winner can still prepare and dispatch !play command for reward or manual request
+    const cmd = rvtikAdapter.prepareCommand('Separuh Aku', 'Noah', 'Bontoters_Sejati');
+    assert.equal(cmd.command, '!play Separuh Aku Noah');
 
     // Host sends command to TikTok LIVE chat
-    await rvtikAdapter.dispatchCommand();
+    await rvtikAdapter.dispatchCommand(cmd.id);
     assert.equal(rvtikAdapter.getStatus().lastCommand?.status, 'SENT');
 
     // TikTok LIVE chat receives the command message
@@ -163,10 +166,102 @@ describe('RVTIK CHAT COMMAND OUTPUT & STANDALONE WORKFLOW TESTS', () => {
     // Command is now verified as appearing in LIVE chat for RVTik!
     assert.equal(rvtikAdapter.getStatus().lastCommand?.verifiedInChat, true);
 
-    // Host clicks NEXT after song finishes playing on RVTik
+    // Host clicks NEXT after round completes
     engine.next();
     assert.equal(engine.getState().stage, 'IDLE');
     assert.equal(engine.getState().audio.bgmPlaying, true, 'BGM resumes for next round');
+  });
+
+  test('7. Phase 4 Top 10 Leaderboard, Top 3 Podium & Free Request Song Rewards Flow', async () => {
+    const rvtikAdapter = new RVTikChatOutputAdapter({ activeMode: 'SIMULATION' });
+    const playbackBridge = new RVTikPlaybackBridge(rvtikAdapter);
+    const tiktokConnector = new MockTikTokConnector();
+
+    const db = new AppDatabase();
+    const archiveService = new SessionArchiveService(db);
+    const roundManager = new RoundManager(QUESTION_CATALOG);
+    const sessionManager = new SessionManager(archiveService);
+    const tap2Aggregator = new Tap2Aggregator();
+    const playerManager = new PlayerIdentityManager();
+
+    const engine = new GameEngine(
+      roundManager,
+      sessionManager,
+      tap2Aggregator,
+      playerManager,
+      playbackBridge,
+      tiktokConnector,
+      archiveService
+    );
+
+    engine.startGame();
+
+    // Seed 4 participants
+    playerManager.getOrCreate('champ_gold', 'Gold Champ');
+    playerManager.getOrCreate('champ_silver', 'Silver Runner');
+    playerManager.getOrCreate('champ_bronze', 'Bronze Fighter');
+    playerManager.getOrCreate('champ_fourth', 'Fourth Place');
+
+    playerManager.awardQuizWin('champ_gold', 150, Date.now() - 3000);
+    playerManager.awardQuizWin('champ_silver', 100, Date.now() - 2000);
+    playerManager.awardQuizWin('champ_bronze', 80, Date.now() - 1000);
+    playerManager.awardQuizWin('champ_fourth', 50, Date.now() - 500);
+
+    // Leaderboard has 4 players sorted by VP
+    const state = engine.getState();
+    assert.equal(state.leaderboard.length, 4);
+    assert.equal(state.leaderboard[0].id, 'champ_gold');
+    assert.equal(state.leaderboard[1].id, 'champ_silver');
+    assert.equal(state.leaderboard[2].id, 'champ_bronze');
+    assert.equal(state.leaderboard[3].id, 'champ_fourth');
+
+    // Host opens podium
+    engine.showPodium();
+    assert.equal(engine.getState().stage, 'CHAMPION');
+    assert.equal(engine.getState().podiumVisible, true);
+
+    // Host repeats announcement
+    engine.repeatChampionAnnouncement();
+    assert.match(engine.getState().announcement || '', /PENGUMUMAN JUARA|SELAMAT KEPADA/);
+
+    // End session: Top 3 champions locked with rewards
+    const summary = engine.endSession();
+    assert.ok(summary);
+    assert.equal(summary.top3Champions?.length, 3);
+    assert.equal(summary.top3Champions[0].userId, 'champ_gold');
+    assert.equal(summary.top3Champions[0].rank, 1);
+    assert.equal(summary.top3Champions[1].userId, 'champ_silver');
+    assert.equal(summary.top3Champions[1].rank, 2);
+    assert.equal(summary.top3Champions[2].userId, 'champ_bronze');
+    assert.equal(summary.top3Champions[2].rank, 3);
+
+    // Verify rewards: exactly Top 3 are eligible for 1 Free Request Song
+    const rewards = engine.getChampionRewards();
+    assert.equal(rewards.length, 3);
+    assert.equal(rewards[0].status, 'ELIGIBLE');
+    assert.equal(rewards[1].status, 'ELIGIBLE');
+    assert.equal(rewards[2].status, 'ELIGIBLE');
+
+    // Non-top 3 cannot redeem
+    const nonTop3Redeem = engine.redeemChampionReward('champ_fourth', 'Dewa 19 - Pupus');
+    assert.equal(nonTop3Redeem.success, false);
+
+    // Host marks Gold Champ's reward as redeemed
+    const goldRedeem = engine.redeemChampionReward('champ_gold', 'Slank - Ku Tak Bisa');
+    assert.equal(goldRedeem.success, true);
+    assert.equal(goldRedeem.record?.status, 'REDEEMED');
+    assert.equal(goldRedeem.record?.requestedSong, 'Slank - Ku Tak Bisa');
+
+    // Double redemption prevented
+    const doubleRedeem = engine.redeemChampionReward('champ_gold', 'Dewa 19 - Risalah Hati');
+    assert.equal(doubleRedeem.success, false);
+    assert.match(doubleRedeem.message, /sudah pernah digunakan/);
+
+    // Session reset does not delete previous archive
+    engine.startGame();
+    assert.equal(engine.getState().leaderboard.length, 0);
+    const allArchives = archiveService.getAllSessions();
+    assert.ok(allArchives.find((s) => s.id === summary.id));
   });
 });
 

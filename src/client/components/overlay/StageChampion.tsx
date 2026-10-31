@@ -1,14 +1,28 @@
 import React from 'react';
-import { Player } from '../../../server/types.js';
+import type { Player, ChampionRewardRecord } from '../../../server/types.js';
 
 interface StageChampionProps {
   leaderboard: Player[];
+  championRewards?: ChampionRewardRecord[];
 }
 
-export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard }) => {
+export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard, championRewards }) => {
   const top1 = leaderboard[0];
   const top2 = leaderboard[1];
   const top3 = leaderboard[2];
+
+  const getRewardStatus = (rank: 1 | 2 | 3) => {
+    const reward = championRewards?.find((r) => r.rank === rank);
+    if (!reward) return { isRedeemed: false, label: '★ 1 FREE REQUEST SONG' };
+    return {
+      isRedeemed: reward.status === 'REDEEMED',
+      label: reward.status === 'REDEEMED' ? '✓ HADIAH SUDAH DIGUNAKAN' : '★ 1 FREE REQUEST SONG AKTIF'
+    };
+  };
+
+  const rew1 = getRewardStatus(1);
+  const rew2 = getRewardStatus(2);
+  const rew3 = getRewardStatus(3);
 
   return (
     <div className="flex flex-col items-center justify-between px-6 py-6 w-full h-full select-none text-center">
@@ -18,12 +32,12 @@ export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard }) => 
           👑 FINAL SHOW — THE BONTOT RADIO
         </div>
         <h1 className="text-[52px] font-black uppercase text-transparent bg-clip-text bg-gradient-to-r from-[#FFD700] via-[#FFFFFF] to-[#FFA500] drop-shadow-[0_4px_12px_rgba(255,215,0,0.5)]">
-          PANGGUNG JUARA
+          PANGGUNG JUARA TOP 3
         </h1>
       </div>
 
       {/* Podium Cards Layout (Top 3) */}
-      <div className="grid grid-cols-3 gap-3 w-full max-w-[940px] items-end mb-4">
+      <div className="grid grid-cols-3 gap-3 w-full max-w-[940px] items-end mb-3">
         {/* 2nd Place (Silver) */}
         <div className="glass-panel rounded-3xl p-4 border border-gray-400 flex flex-col items-center shadow-lg">
           <div className="w-9 h-9 rounded-full bg-gray-400 text-black font-black text-[22px] flex items-center justify-center mb-2">
@@ -42,8 +56,16 @@ export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard }) => 
           <div className="text-[32px] font-black text-gray-200 font-mono mt-1">
             {top2?.totalVP || 0} VP
           </div>
-          <div className="text-[20px] text-gray-400 mt-1">
+          <div className="text-[18px] text-gray-400 mt-0.5">
             Quiz: {top2?.quizPoints || 0} | Tap2: {top2?.tap2Points || 0}
+          </div>
+          {/* Reward Badge */}
+          <div className={`mt-2 px-3 py-1 rounded-full text-[14px] font-bold border ${
+            rew2.isRedeemed
+              ? 'bg-gray-700/60 text-gray-300 border-gray-600'
+              : 'bg-slate-300/20 text-slate-200 border-slate-300 shadow-[0_0_10px_rgba(200,200,200,0.3)]'
+          }`}>
+            {rew2.label}
           </div>
         </div>
 
@@ -65,8 +87,16 @@ export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard }) => 
           <div className="text-[44px] font-black text-white font-mono mt-1 drop-shadow-md">
             {top1?.totalVP || 0} VP
           </div>
-          <div className="text-[22px] font-bold text-amber-200 mt-1">
+          <div className="text-[20px] font-bold text-amber-200 mt-0.5">
             Quiz: {top1?.quizPoints || 0} | Tap2: {top1?.tap2Points || 0}
+          </div>
+          {/* Reward Badge */}
+          <div className={`mt-2.5 px-4 py-1.5 rounded-full text-[16px] font-black border ${
+            rew1.isRedeemed
+              ? 'bg-gray-700/60 text-gray-300 border-gray-600'
+              : 'bg-amber-400/20 text-amber-300 border-amber-400 shadow-[0_0_15px_rgba(255,215,0,0.5)]'
+          }`}>
+            {rew1.label}
           </div>
         </div>
 
@@ -88,10 +118,28 @@ export const StageChampion: React.FC<StageChampionProps> = ({ leaderboard }) => 
           <div className="text-[32px] font-black text-amber-400 font-mono mt-1">
             {top3?.totalVP || 0} VP
           </div>
-          <div className="text-[20px] text-gray-400 mt-1">
+          <div className="text-[18px] text-gray-400 mt-0.5">
             Quiz: {top3?.quizPoints || 0} | Tap2: {top3?.tap2Points || 0}
           </div>
+          {/* Reward Badge */}
+          <div className={`mt-2 px-3 py-1 rounded-full text-[14px] font-bold border ${
+            rew3.isRedeemed
+              ? 'bg-gray-700/60 text-gray-300 border-gray-600'
+              : 'bg-amber-700/20 text-amber-400 border-amber-600 shadow-[0_0_10px_rgba(180,100,50,0.4)]'
+          }`}>
+            {rew3.label}
+          </div>
         </div>
+      </div>
+
+      {/* Reward Announcement Banner */}
+      <div className="glass-panel rounded-2xl px-6 py-3 max-w-[940px] w-full text-center border border-[#FFD700]/40 bg-black/60 mb-2">
+        <span className="text-[22px] font-bold text-[#FFD700]">
+          🎁 REWARD: Masing-masing Juara 1, 2, & 3 berhak atas 1 Free Request Song!
+        </span>
+        <p className="text-[18px] text-gray-300 mt-0.5">
+          Sampaikan lagu pilihanmu ke Host untuk diputar di THE BONTOT RADIO. (1 lagu per akun per sesi).
+        </p>
       </div>
 
       {/* Summary Score Table (Top 5 transparent breakdown) */}

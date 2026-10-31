@@ -1,0 +1,160 @@
+import React from 'react';
+import type { Player } from '../../../server/types.js';
+
+interface Top10LeaderboardProps {
+  leaderboard: Player[];
+  activeRound?: number;
+}
+
+export const Top10Leaderboard: React.FC<Top10LeaderboardProps> = ({
+  leaderboard,
+  activeRound
+}) => {
+  const top10 = leaderboard.slice(0, 10);
+
+  const getRankBadge = (rank: number) => {
+    switch (rank) {
+      case 1:
+        return {
+          bg: 'bg-gradient-to-r from-amber-400 to-yellow-500 text-black shadow-[0_0_15px_rgba(255,215,0,0.6)] border-[#FFD700]',
+          icon: '👑',
+          label: '1'
+        };
+      case 2:
+        return {
+          bg: 'bg-gradient-to-r from-slate-200 to-gray-400 text-black shadow-[0_0_12px_rgba(200,200,200,0.5)] border-slate-300',
+          icon: '🥈',
+          label: '2'
+        };
+      case 3:
+        return {
+          bg: 'bg-gradient-to-r from-amber-700 to-amber-600 text-white shadow-[0_0_12px_rgba(180,100,50,0.5)] border-amber-600',
+          icon: '🥉',
+          label: '3'
+        };
+      default:
+        return {
+          bg: 'bg-[#121326] text-cyan-300 border-cyan-500/40 shadow-sm',
+          icon: null,
+          label: String(rank)
+        };
+    }
+  };
+
+  return (
+    <div className="flex flex-col items-center justify-between px-6 py-6 w-full h-full select-none text-center">
+      {/* Header Bar */}
+      <div className="mb-3 w-full max-w-[940px]">
+        <div className="inline-flex items-center gap-2 px-6 py-1.5 rounded-full bg-[#00F0FF]/15 border border-[#00F0FF]/60 text-[#00F0FF] text-[22px] font-black uppercase tracking-widest mb-2 shadow-[0_0_20px_rgba(0,240,255,0.3)]">
+          <span className="w-3 h-3 rounded-full bg-[#00F0FF] animate-ping" />
+          KLASEMEN SEMENTARA • TOP 10
+        </div>
+        <h1 className="text-[44px] font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] via-white to-[#8A2BE2] drop-shadow-[0_4px_12px_rgba(0,240,255,0.5)]">
+          MUSIC LEGEND LIVE
+        </h1>
+        <div className="flex items-center justify-center gap-3 text-[18px] text-gray-400 font-mono mt-1">
+          {activeRound && activeRound > 0 ? (
+            <span className="px-3 py-0.5 rounded-lg bg-white/10 text-white font-bold">
+              RONDE #{activeRound}
+            </span>
+          ) : null}
+          <span>● REAL-TIME GAME ENGINE VP</span>
+          <span>•</span>
+          <span>{leaderboard.length} Total Peserta</span>
+        </div>
+      </div>
+
+      {/* Top 10 List Cards */}
+      <div className="w-full max-w-[940px] space-y-2 flex-1 flex flex-col justify-start overflow-hidden my-2">
+        {top10.length === 0 ? (
+          <div className="glass-panel rounded-3xl p-10 flex flex-col items-center justify-center text-gray-400 my-auto">
+            <span className="text-[48px] mb-3">🎵</span>
+            <p className="text-[28px] font-bold text-white mb-2">
+              Belum Ada Skor di Sesi Ini
+            </p>
+            <p className="text-[20px] text-gray-400 max-w-lg">
+              Ketik <span className="text-[#00F0FF] font-mono font-bold">!jawab &lt;judul&gt; &lt;penyanyi&gt;</span> di kolom komentar TikTok atau Tap-Tap layar untuk meraih Viewer Points (VP)!
+            </p>
+          </div>
+        ) : (
+          top10.map((player, index) => {
+            const rank = index + 1;
+            const badge = getRankBadge(rank);
+            const isTop3 = rank <= 3;
+
+            return (
+              <div
+                key={player.id}
+                className={`flex items-center justify-between px-5 py-2.5 rounded-2xl border transition-all duration-300 ${
+                  isTop3
+                    ? rank === 1
+                      ? 'bg-gradient-to-r from-amber-500/20 via-yellow-500/10 to-transparent border-amber-400/80 shadow-[0_0_15px_rgba(255,215,0,0.2)]'
+                      : rank === 2
+                      ? 'bg-gradient-to-r from-slate-400/20 via-gray-400/10 to-transparent border-slate-300/70 shadow-sm'
+                      : 'bg-gradient-to-r from-amber-700/20 via-amber-800/10 to-transparent border-amber-600/70 shadow-sm'
+                    : 'bg-[#0c0d1a]/80 border-white/10 hover:border-cyan-500/30'
+                }`}
+              >
+                {/* Left: Rank & Player Identity */}
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div
+                    className={`w-10 h-10 rounded-xl font-black text-[22px] font-mono flex items-center justify-center shrink-0 border ${badge.bg}`}
+                  >
+                    {badge.label}
+                  </div>
+
+                  <div className="w-10 h-10 rounded-full border border-white/20 overflow-hidden bg-black/40 shrink-0 flex items-center justify-center text-[20px]">
+                    {player.avatarUrl ? (
+                      <img src={player.avatarUrl} alt={player.nickname} className="w-full h-full object-cover" />
+                    ) : (
+                      <span>{badge.icon || '👤'}</span>
+                    )}
+                  </div>
+
+                  <div className="text-left min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[26px] font-extrabold text-white truncate max-w-[420px] tracking-tight">
+                        {player.nickname}
+                      </span>
+                      {player.streak >= 2 && (
+                        <span className="px-2 py-0.5 rounded text-[14px] font-black bg-rose-500/20 text-rose-300 border border-rose-500/40 shrink-0">
+                          🔥 {player.streak}x
+                        </span>
+                      )}
+                    </div>
+                    <div className="text-[16px] text-gray-400 font-mono">
+                      Quiz: <strong className="text-gray-300">{player.quizPoints}</strong> | Tap2: <strong className="text-pink-300">{player.tap2Points}</strong> ({player.rawTap2.toLocaleString()}) | Menang: <strong className="text-amber-300">{player.wins}</strong>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right: Total VP */}
+                <div className="text-right shrink-0 pl-3">
+                  <div className="text-[34px] font-black text-transparent bg-clip-text bg-gradient-to-r from-[#00F0FF] to-white font-mono drop-shadow-[0_2px_8px_rgba(0,240,255,0.4)]">
+                    {player.totalVP.toLocaleString()}
+                  </div>
+                  <div className="text-[14px] font-bold text-[#00F0FF] uppercase tracking-wider">
+                    VIEWER POINTS
+                  </div>
+                </div>
+              </div>
+            );
+          })
+        )}
+      </div>
+
+      {/* Footer Info Banner */}
+      <div className="glass-panel rounded-2xl px-5 py-2.5 max-w-[940px] w-full flex items-center justify-between text-[18px] text-gray-300 border border-white/10 mt-1">
+        <div className="flex items-center gap-2">
+          <span>🎁</span>
+          <span className="font-bold text-[#FFD700]">
+            Top 3 Juara di akhir sesi mendapatkan hadiah 1 Free Request Song!
+          </span>
+        </div>
+        <div className="font-mono text-cyan-400 font-bold">
+          !jawab &lt;lagu&gt; &lt;penyanyi&gt;
+        </div>
+      </div>
+    </div>
+  );
+};

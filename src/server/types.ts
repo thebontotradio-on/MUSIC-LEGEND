@@ -75,6 +75,23 @@ export interface SafeZoneConfig {
   chatExclusionHeight: number; // percentage of bottom screen reserved for TikTok comments, e.g. 35
 }
 
+export type ChampionRewardStatus = 'ELIGIBLE' | 'REDEEMED';
+
+export interface ChampionRewardRecord {
+  id: string; // e.g. "rew_sess123_rank1"
+  sessionId: string;
+  rank: 1 | 2 | 3;
+  userId: string;
+  nickname: string;
+  totalVP: number;
+  rewardTitle: string; // "1 Free Request Song"
+  status: ChampionRewardStatus; // 'ELIGIBLE' | 'REDEEMED'
+  awardedAt: number;
+  redeemedAt?: number;
+  requestedSong?: string; // Optional track requested by champion
+  notes?: string;
+}
+
 export interface SessionArchiveSummary {
   id: string;
   sessionCode: string;
@@ -88,6 +105,8 @@ export interface SessionArchiveSummary {
     quizPoints: number;
     tap2Points: number;
   } | null;
+  top3Champions?: ChampionRewardRecord[];
+  championRewards?: ChampionRewardRecord[];
   players: Player[];
   rounds: RoundResult[];
 }
@@ -154,6 +173,9 @@ export interface GameState {
   isQuestionLocked: boolean; // Atomic lock
   players: Record<string, Player>;
   leaderboard: Player[];
+  top3Champions?: ChampionRewardRecord[];
+  championRewards?: ChampionRewardRecord[];
+  podiumVisible?: boolean;
   safeZone: SafeZoneConfig;
   audio: {
     bgmPlaying: boolean;

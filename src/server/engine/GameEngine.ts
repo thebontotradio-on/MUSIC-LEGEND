@@ -5,7 +5,8 @@ import {
   SafeZoneConfig,
   Player,
   RoundResult,
-  SessionArchiveSummary
+  SessionArchiveSummary,
+  ChampionRewardRecord
 } from '../types.js';
 import { RoundManager } from './RoundManager.js';
 import { SessionManager } from './SessionManager.js';
@@ -104,6 +105,9 @@ export class GameEngine {
       isQuestionLocked: this.roundManager.isQuestionLocked(),
       players: playersMap,
       leaderboard: sortedLeaderboard,
+      top3Champions: this.sessionManager.getChampionRewards(),
+      championRewards: this.sessionManager.getChampionRewards(),
+      podiumVisible: this.stage === 'CHAMPION',
       safeZone: this.safeZone,
       audio: {
         bgmPlaying: this.bgmPlaying,
@@ -208,8 +212,49 @@ export class GameEngine {
   public finalShow(): void {
     this.stage = 'CHAMPION';
     this.bgmPlaying = true;
-    this.lastAnnouncement = '👑 FINAL SHOW — PODIUM JUARA!';
+    this.lastAnnouncement = '👑 FINAL SHOW — PODIUM JUARA TOP 3!';
     this.notify();
+  }
+
+  public showPodium(): void {
+    this.stage = 'CHAMPION';
+    this.bgmPlaying = true;
+    this.lastAnnouncement = '👑 PODIUM JUARA TOP 3 DITAMPILKAN!';
+    this.notify();
+  }
+
+  public hidePodium(): void {
+    this.stage = 'IDLE';
+    this.lastAnnouncement = 'Podium juara ditutup, kembali ke mode standby.';
+    this.notify();
+  }
+
+  public repeatChampionAnnouncement(): void {
+    const rewards = this.sessionManager.getChampionRewards();
+    if (rewards.length > 0) {
+      const names = rewards.map(r => `Juara ${r.rank}: @${r.nickname}`).join(', ');
+      this.lastAnnouncement = `🏆 SELAMAT KEPADA PARA JUARA! ${names}. Masing-masing mendapatkan 1 FREE REQUEST SONG!`;
+    } else {
+      this.lastAnnouncement = '👑 PENGUMUMAN JUARA MUSIC LEGEND LIVE!';
+    }
+    this.notify();
+  }
+
+  public redeemChampionReward(
+    userIdOrId: string,
+    requestedSong?: string,
+    notes?: string
+  ): { success: boolean; message: string; record?: ChampionRewardRecord } {
+    const res = this.sessionManager.redeemChampionReward(userIdOrId, requestedSong, notes);
+    if (res.success && res.record) {
+      this.lastAnnouncement = `🎁 HADIAH DIGUNAKAN: @${res.record.nickname} menukarkan 1 Free Request Song (${res.record.requestedSong || 'Lagu Pilihan'})!`;
+    }
+    this.notify();
+    return res;
+  }
+
+  public getChampionRewards(): ChampionRewardRecord[] {
+    return this.sessionManager.getChampionRewards();
   }
 
   public endSession(): SessionArchiveSummary {
@@ -226,7 +271,7 @@ export class GameEngine {
     const summary = this.sessionManager.endSession(this.playerManager.getAllPlayers());
     this.stage = 'CHAMPION';
     this.bgmPlaying = false;
-    this.lastAnnouncement = 'Sesi Telah Berakhir & Diarsipkan.';
+    this.lastAnnouncement = 'Sesi Telah Berakhir & Diarsipkan. Hadiah 1 Free Request Song aktif untuk Top 3 Juara!';
     this.notify();
     return summary;
   }
@@ -316,19 +361,9 @@ export class GameEngine {
     this.stage = 'WINNER';
     this.lastAnnouncement = `🎉 ${player.nickname} MENANG! (+${scoringResult.totalPointsAwarded} VP)`;
 
-    // Dispatch playback request to Answer Song Playback Bridge (does not block points)
-    this.playbackBridge.requestPlayback(
-      currentQuestion.expectedTitle,
-      currentQuestion.expectedArtist
-    ).then((playbackResult) => {
-      if (playbackResult.status === 'FAILED') {
-        this.lastAnnouncement = `[AUDIO NOTIF] Lagu jawaban gagal diputar melalui bridge: ${playbackResult.errorMessage}`;
-        this.notify();
-      }
-    }).catch((err) => {
-      this.lastAnnouncement = `[AUDIO NOTIF] Playback bridge error: ${err.message}`;
-      this.notify();
-    });
+    // PHASE 4 REQUIREMENT B: Decouple playback per round winner
+    // Answering correctly adds score without triggering playback of answer song.
+    // Normal viewer song requests and radio playback continue undisturbed.
 
     this.notify();
   }

@@ -94,19 +94,45 @@ export const ArchiveViewer: React.FC = () => {
                 </div>
 
                 {isExpanded && (
-                  <div className="p-3 bg-black/40 border-t border-white/10 text-xs">
-                    <div className="mb-2 font-bold text-gray-300">Riwayat Soal:</div>
-                    <div className="space-y-1 font-mono text-[11px]">
-                      {sess.rounds.map((r) => (
-                        <div key={r.roundNumber} className="flex justify-between text-gray-400 py-0.5">
-                          <span>
-                            Round #{r.roundNumber}: {r.question.expectedTitle} — {r.question.expectedArtist}
-                          </span>
-                          <span className="text-emerald-400">
-                            {r.winner ? `✓ ${r.winner.player.nickname} (+${r.winner.pointsAwarded} VP)` : 'Dilewati'}
-                          </span>
+                  <div className="p-3 bg-black/40 border-t border-white/10 text-xs space-y-3">
+                    {/* Champion Rewards Section */}
+                    {sess.championRewards && sess.championRewards.length > 0 && (
+                      <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-2.5">
+                        <div className="font-bold text-amber-300 text-xs mb-1.5 flex items-center gap-1.5">
+                          <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                          <span>Penerima Hadiah 1 Free Request Song:</span>
                         </div>
-                      ))}
+                        <div className="space-y-1 text-[11px] font-mono">
+                          {sess.championRewards.map((rew) => (
+                            <div key={rew.id} className="flex items-center justify-between py-0.5 border-b border-white/5 last:border-0">
+                              <span className="text-white">
+                                Juara #{rew.rank}: <strong className="text-amber-200">@{rew.nickname}</strong> ({rew.totalVP} VP)
+                              </span>
+                              <span className={rew.status === 'REDEEMED' ? 'text-gray-400' : 'text-emerald-400 font-bold'}>
+                                {rew.status === 'REDEEMED'
+                                  ? `✓ Digunakan: ${rew.requestedSong || 'Lagu Pilihan'}`
+                                  : '★ Belum Digunakan'}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    <div>
+                      <div className="mb-1 font-bold text-gray-300">Riwayat Soal:</div>
+                      <div className="space-y-1 font-mono text-[11px]">
+                        {sess.rounds.map((r) => (
+                          <div key={r.roundNumber} className="flex justify-between text-gray-400 py-0.5">
+                            <span>
+                              Round #{r.roundNumber}: {r.question.expectedTitle} — {r.question.expectedArtist}
+                            </span>
+                            <span className="text-emerald-400">
+                              {r.winner ? `✓ ${r.winner.player.nickname} (+${r.winner.pointsAwarded} VP)` : 'Dilewati'}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}

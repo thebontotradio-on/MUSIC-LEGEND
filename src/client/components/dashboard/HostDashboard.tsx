@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { GameState, SafeZoneConfig } from '../../../server/types.js';
 import { HostControls } from './HostControls.js';
+import { ChampionRewardsPanel } from './ChampionRewardsPanel.js';
 import { RVTikChatOutputPanel } from './RVTikChatOutputPanel.js';
 import { SafeZoneConfigModal } from './SafeZoneConfigModal.js';
 import { AudioControlPanel } from './AudioControlPanel.js';
@@ -19,7 +20,7 @@ interface HostDashboardProps {
 export const HostDashboard: React.FC<HostDashboardProps> = ({ gameState, onAction }) => {
   const [showGuides, setShowGuides] = useState(false);
 
-  const handleHostControl = async (action: string) => {
+  const handleHostControl = async (action: string, payload?: any) => {
     switch (action) {
       case 'start-game':
         await onAction('/api/host/start-game');
@@ -45,8 +46,18 @@ export const HostDashboard: React.FC<HostDashboardProps> = ({ gameState, onActio
       case 'resume':
         await onAction('/api/host/resume');
         break;
+      case 'show-podium':
       case 'final-show':
-        await onAction('/api/host/final-show');
+        await onAction('/api/host/show-podium');
+        break;
+      case 'hide-podium':
+        await onAction('/api/host/hide-podium');
+        break;
+      case 'repeat-announcement':
+        await onAction('/api/host/repeat-announcement');
+        break;
+      case 'redeem-reward':
+        await onAction('/api/host/redeem-reward', payload);
         break;
       case 'end-session':
         await onAction('/api/host/end-session');
@@ -121,6 +132,9 @@ export const HostDashboard: React.FC<HostDashboardProps> = ({ gameState, onActio
         <div className="lg:col-span-8 space-y-6">
           {/* Host Action Buttons */}
           <HostControls gameState={gameState} onAction={handleHostControl} />
+
+          {/* Champion Rewards & Podium Controls */}
+          <ChampionRewardsPanel gameState={gameState} onAction={handleHostControl} />
 
           {/* RVTik Chat Command Output Panel (TikTok LIVE Request Integration) */}
           <RVTikChatOutputPanel

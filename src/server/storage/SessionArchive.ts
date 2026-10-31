@@ -1,5 +1,5 @@
 import { AppDatabase } from './Database.js';
-import { SessionArchiveSummary, SafeZoneConfig, RoundResult, Player } from '../types.js';
+import { SessionArchiveSummary, SafeZoneConfig, RoundResult, Player, ChampionRewardRecord } from '../types.js';
 
 export class SessionArchiveService {
   private db: AppDatabase;
@@ -91,6 +91,29 @@ export class SessionArchiveService {
 
     if (!row) return null;
     return JSON.parse(row.data_json) as SessionArchiveSummary;
+  }
+
+  /**
+   * Updates champion reward records in a session archive
+   */
+  public updateSessionRewards(sessionId: string, rewards: ChampionRewardRecord[]): void {
+    const rawDb = this.db.getRawDb();
+    const row = rawDb.prepare(`
+      SELECT data_json FROM sessions WHERE id = ?
+    `).get(sessionId) as { data_json: string } | undefined;
+
+    if (row) {
+      try {
+        const parsed = JSON.parse(row.data_json) as SessionArchiveSummary;
+        parsed.championRewards = rewards;
+        parsed.top3Champions = rewards;
+        rawDb.prepare(`
+          UPDATE sessions SET data_json = ? WHERE id = ?
+        `).run(JSON.stringify(parsed), sessionId);
+      } catch (err) {
+        console.error('Failed to update session rewards in database:', err);
+      }
+    }
   }
 
   /**

@@ -172,6 +172,31 @@ app.post('/api/host/final-show', (req, res) => {
   res.json({ success: true, state: gameEngine.getState() });
 });
 
+app.post('/api/host/show-podium', (req, res) => {
+  gameEngine.showPodium();
+  res.json({ success: true, state: gameEngine.getState() });
+});
+
+app.post('/api/host/hide-podium', (req, res) => {
+  gameEngine.hidePodium();
+  res.json({ success: true, state: gameEngine.getState() });
+});
+
+app.post('/api/host/repeat-announcement', (req, res) => {
+  gameEngine.repeatChampionAnnouncement();
+  res.json({ success: true, state: gameEngine.getState() });
+});
+
+app.post('/api/host/redeem-reward', (req, res) => {
+  const { userId, id, requestedSong, notes } = req.body || {};
+  const result = gameEngine.redeemChampionReward(userId || id, requestedSong, notes);
+  res.json({ ...result, state: gameEngine.getState() });
+});
+
+app.get('/api/host/rewards', (req, res) => {
+  res.json(gameEngine.getChampionRewards());
+});
+
 app.post('/api/host/end-session', (req, res) => {
   const summary = gameEngine.endSession();
   res.json({ success: true, summary, state: gameEngine.getState() });

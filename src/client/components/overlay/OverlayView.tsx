@@ -5,6 +5,7 @@ import { StageIdle } from './StageIdle.js';
 import { StageGuessing } from './StageGuessing.js';
 import { StageWinner } from './StageWinner.js';
 import { StageChampion } from './StageChampion.js';
+import { Top10Leaderboard } from './Top10Leaderboard.js';
 import { SafeZoneGuides } from './SafeZoneGuides.js';
 import { soundSystem } from '../../audio/SoundSystem.js';
 
@@ -91,20 +92,59 @@ export const OverlayView: React.FC<OverlayViewProps> = ({ gameState, showGuides 
           padding: `${safeZone.margin}px`
         }}
       >
-        {gameState.stage === 'IDLE' && <StageIdle />}
-        {gameState.stage === 'GUESSING' && (
-          <StageGuessing
-            roundNumber={gameState.roundNumber}
-            question={gameState.currentQuestion}
-            isLocked={gameState.isQuestionLocked}
-          />
-        )}
-        {gameState.stage === 'WINNER' && (
-          <StageWinner round={gameState.currentRound} />
-        )}
-        {gameState.stage === 'CHAMPION' && (
-          <StageChampion leaderboard={gameState.leaderboard} />
-        )}
+        {(() => {
+          const isLeaderboardView = typeof window !== 'undefined' && (
+            window.location?.search?.includes('view=leaderboard') ||
+            window.location?.hash?.includes('view=leaderboard') ||
+            window.location?.search?.includes('widget=overlay-music-legend-leaderboard') ||
+            window.location?.hash?.includes('widget=overlay-music-legend-leaderboard')
+          );
+
+          if (isLeaderboardView) {
+            return (
+              <Top10Leaderboard
+                leaderboard={gameState.leaderboard}
+                activeRound={gameState.roundNumber}
+              />
+            );
+          }
+
+          if (gameState.stage === 'IDLE') {
+            return gameState.leaderboard.length > 0 ? (
+              <Top10Leaderboard
+                leaderboard={gameState.leaderboard}
+                activeRound={gameState.roundNumber}
+              />
+            ) : (
+              <StageIdle />
+            );
+          }
+
+          if (gameState.stage === 'GUESSING') {
+            return (
+              <StageGuessing
+                roundNumber={gameState.roundNumber}
+                question={gameState.currentQuestion}
+                isLocked={gameState.isQuestionLocked}
+              />
+            );
+          }
+
+          if (gameState.stage === 'WINNER') {
+            return <StageWinner round={gameState.currentRound} />;
+          }
+
+          if (gameState.stage === 'CHAMPION') {
+            return (
+              <StageChampion
+                leaderboard={gameState.leaderboard}
+                championRewards={gameState.championRewards}
+              />
+            );
+          }
+
+          return <StageIdle />;
+        })()}
       </div>
 
       {/* CHAT EXCLUSION ZONE (Bottom screen reserved for TikTok comments) */}
