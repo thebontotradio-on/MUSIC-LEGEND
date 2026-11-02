@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MUSIC LEGEND LIVE — THE BONTOT RADIO</title>
+  <!-- Google Fonts: Plus Jakarta Sans, Inter, Roboto for Bontoters 30-60 y.o. high readability -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800;900&family=Plus+Jakarta+Sans:wght@500;700;800;900&family=Roboto:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <!-- Tailwind CSS Runtime -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            neonCyan: '#00F0FF',
+            neonPurple: '#8A2BE2',
+            neonMagenta: '#FF007F',
+            neonGold: '#FFD700',
+            bgDark: '#07070d'
+          },
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'Inter', 'Roboto', 'sans-serif'],
+            mono: ['ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'monospace']
+          }
+        }
+      }
+    }
+  </script>
+</head>
+<body class="bg-[#07070d] text-white overflow-x-hidden font-sans select-none">
+  <div id="root"></div>
+  <script type="module" src="/src/client/main.tsx"></script>
+</body>
+</html>
